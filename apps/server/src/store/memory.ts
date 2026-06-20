@@ -2,6 +2,7 @@ import type {
   Alert,
   AlertTrigger,
   BuyerProfile,
+  BuyerProfileInput,
   Comp,
   EmploymentType,
   Listing,
@@ -137,24 +138,20 @@ class MemoryStore {
   }
 
   // ── Buyer profile (encrypted) ────────────────────────────────────────
-  upsertProfile(
-    userId: string,
-    input: {
-      grossAnnualIncome: number;
-      monthlyDebts: number;
-      downPayment: number;
-      employmentType: EmploymentType;
-      dependents?: number;
-    },
-  ): BuyerProfile {
+  // Param is the Zod-inferred input type so the route's `parsed.data` always
+  // matches exactly (no hand-written shape to drift from inference). Fields are
+  // coerced with defaults so this compiles whether they infer as required or
+  // optional; Zod validation guarantees presence at runtime, so defaults are inert.
+  upsertProfile(userId: string, input: BuyerProfileInput): BuyerProfile {
     const existing = this.profiles.get(userId);
+    const employmentType: EmploymentType = input.employmentType ?? "salaried";
     const stored: StoredProfile = {
       id: existing?.id ?? randomId("bp"),
       userId,
-      grossAnnualIncomeEnc: encryptNumber(input.grossAnnualIncome),
-      monthlyDebtsEnc: encryptNumber(input.monthlyDebts),
-      downPaymentEnc: encryptNumber(input.downPayment),
-      employmentType: input.employmentType,
+      grossAnnualIncomeEnc: encryptNumber(input.grossAnnualIncome ?? 0),
+      monthlyDebtsEnc: encryptNumber(input.monthlyDebts ?? 0),
+      downPaymentEnc: encryptNumber(input.downPayment ?? 0),
+      employmentType,
       dependents: input.dependents,
       updatedAt: new Date().toISOString(),
     };
