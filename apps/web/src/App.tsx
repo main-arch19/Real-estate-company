@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import { TopNav } from "./components/TopNav";
+import { DemoBanner } from "./components/DemoBanner";
+import { IS_STATIC } from "./lib/api";
 import { useAuth } from "./lib/auth";
 import { Home } from "./routes/Home";
 import { Results } from "./routes/Results";
@@ -25,6 +27,7 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {!isPrintRoute && IS_STATIC && <DemoBanner />}
       {!isPrintRoute && <TopNav />}
       <main className="flex-1">
         <Routes>

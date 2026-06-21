@@ -6,3 +6,5 @@ export * from "./scoring.js";
 export * from "./affordability.js";
 export * from "./disclaimers.js";
 export * from "./geo.js";
+export * from "./seed.js";
+export * from "./coach.js";
